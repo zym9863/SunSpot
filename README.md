@@ -1,3 +1,5 @@
+[English](./README-EN.md)
+
 # 🌻 SunSpot - 动态心情气象站
 
 > 用阳光记录每一天的心情
