@@ -1,0 +1,59 @@
+---
+import { getWeather, getLocationByIP, getThemeFromWeather, type WeatherData } from '../lib/weather';
+
+// 服务端获取天气数据
+const location = await getLocationByIP();
+const weather: WeatherData = await getWeather(location.latitude, location.longitude);
+const theme = getThemeFromWeather(weather.type);
+---
+
+<div class="weather-station" data-theme={theme}>
+  <div class="weather-icon animate-float">
+    {weather.icon}
+  </div>
+  <div class="weather-info">
+    <div class="temperature">{weather.temperature}°C</div>
+    <div class="description">{weather.description}</div>
+  </div>
+</div>
+
+<script define:vars={{ theme }}>
+  // 将主题应用到文档根元素
+  document.documentElement.setAttribute('data-theme', theme);
+</script>
+
+<style>
+  .weather-station {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg);
+    background: var(--surface);
+    backdrop-filter: blur(20px);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+  }
+  
+  .weather-icon {
+    font-size: 4rem;
+    line-height: 1;
+  }
+  
+  .weather-info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+  
+  .temperature {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--primary);
+  }
+  
+  .description {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+  }
+</style>

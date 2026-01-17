@@ -1,0 +1,132 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import DiaryCard from '../../components/DiaryCard.astro';
+import Calendar from '../../components/Calendar.astro';
+import { getCollection } from 'astro:content';
+
+export const prerender = true; // 静态生成
+
+const diaries = await getCollection('diary');
+
+// 按日期降序排序
+const sortedDiaries = diaries.sort((a, b) => 
+  new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
+);
+
+// 提取日记日期用于日历标记
+const diaryDates = diaries.map(diary => {
+  const d = new Date(diary.data.date);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+});
+
+// 当前月份
+const now = new Date();
+const currentYear = now.getFullYear();
+const currentMonth = now.getMonth();
+---
+
+<Layout title="日记 - SunSpot" description="用Markdown记录你的每一天">
+  <div class="container">
+    <section class="diary-header">
+      <h1 class="page-title">
+        <span class="title-icon">📔</span>
+        我的日记
+      </h1>
+      <p class="page-subtitle">用阳光点亮每一天的记录</p>
+    </section>
+    
+    <div class="diary-layout">
+      <aside class="calendar-sidebar">
+        <Calendar year={currentYear} month={currentMonth} diaryDates={diaryDates} />
+      </aside>
+      
+      <main class="diary-list">
+        {sortedDiaries.length > 0 ? (
+          sortedDiaries.map(diary => (
+            <DiaryCard
+              title={diary.data.title}
+              date={diary.data.date}
+              mood={diary.data.mood}
+              excerpt={diary.data.excerpt}
+              slug={diary.id}
+            />
+          ))
+        ) : (
+          <div class="empty-state">
+            <span class="empty-icon">🌻</span>
+            <p>还没有日记，开始写第一篇吧！</p>
+          </div>
+        )}
+      </main>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .diary-header {
+    text-align: center;
+    padding: var(--spacing-lg) 0;
+  }
+  
+  .page-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+  }
+  
+  .title-icon {
+    font-size: 2rem;
+  }
+  
+  .page-subtitle {
+    color: var(--text-muted);
+    margin-top: var(--spacing-xs);
+  }
+  
+  .diary-layout {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: var(--spacing-xl);
+    align-items: start;
+  }
+  
+  .calendar-sidebar {
+    position: sticky;
+    top: 100px;
+  }
+  
+  .diary-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+  
+  .empty-state {
+    text-align: center;
+    padding: var(--spacing-xl);
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+  }
+  
+  .empty-icon {
+    font-size: 4rem;
+    display: block;
+    margin-bottom: var(--spacing-md);
+    opacity: 0.5;
+  }
+  
+  @media (max-width: 900px) {
+    .diary-layout {
+      grid-template-columns: 1fr;
+    }
+    
+    .calendar-sidebar {
+      position: static;
+      order: -1;
+    }
+  }
+</style>

@@ -1,0 +1,143 @@
+---
+interface Props {
+  year: number;
+  month: number;
+  diaryDates: string[];
+}
+
+const { year, month, diaryDates } = Astro.props;
+
+const monthNames = ['一月', '二月', '三月', '四月', '五月', '六月', 
+                    '七月', '八月', '九月', '十月', '十一月', '十二月'];
+
+// 获取当月第一天是星期几和当月天数
+const firstDay = new Date(year, month, 1).getDay();
+const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+// 生成日历格子
+const calendarDays: (number | null)[] = [];
+for (let i = 0; i < firstDay; i++) {
+  calendarDays.push(null);
+}
+for (let i = 1; i <= daysInMonth; i++) {
+  calendarDays.push(i);
+}
+
+// 检查某天是否有日记
+function hasDiary(day: number): boolean {
+  const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+  return diaryDates.includes(dateStr);
+}
+
+const weekDays = ['日', '一', '二', '三', '四', '五', '六'];
+---
+
+<div class="calendar">
+  <div class="calendar-header">
+    <h3 class="calendar-title">{monthNames[month]} {year}</h3>
+  </div>
+  
+  <div class="calendar-weekdays">
+    {weekDays.map(day => (
+      <div class="weekday">{day}</div>
+    ))}
+  </div>
+  
+  <div class="calendar-grid">
+    {calendarDays.map(day => (
+      <div class={`calendar-day ${day ? '' : 'empty'} ${day && hasDiary(day) ? 'has-diary' : ''}`}>
+        {day && (
+          <>
+            <span class="day-number">{day}</span>
+            {hasDiary(day) && <span class="sun-icon">🌻</span>}
+          </>
+        )}
+      </div>
+    ))}
+  </div>
+</div>
+
+<style>
+  .calendar {
+    background: var(--surface);
+    backdrop-filter: blur(20px);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    padding: var(--spacing-lg);
+    box-shadow: var(--shadow);
+  }
+  
+  .calendar-header {
+    text-align: center;
+    margin-bottom: var(--spacing-md);
+  }
+  
+  .calendar-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--primary);
+  }
+  
+  .calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin-bottom: var(--spacing-sm);
+  }
+  
+  .weekday {
+    text-align: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    padding: var(--spacing-xs);
+  }
+  
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+  }
+  
+  .calendar-day {
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-sm);
+    position: relative;
+    transition: all var(--transition-fast);
+  }
+  
+  .calendar-day:not(.empty):hover {
+    background: rgba(255, 159, 67, 0.1);
+  }
+  
+  .calendar-day.has-diary {
+    background: rgba(255, 159, 67, 0.15);
+    cursor: pointer;
+  }
+  
+  .calendar-day.has-diary:hover {
+    background: rgba(255, 159, 67, 0.25);
+    transform: scale(1.05);
+  }
+  
+  .day-number {
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+  
+  .sun-icon {
+    font-size: 0.75rem;
+    position: absolute;
+    bottom: 2px;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.8; transform: scale(0.95); }
+  }
+</style>

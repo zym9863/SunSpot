@@ -1,46 +1,130 @@
-# Astro Starter Kit: Basics
+# 🌻 SunSpot - 动态心情气象站
 
-```sh
-pnpm create astro@latest -- --template basics
-```
+> 用阳光记录每一天的心情
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+SunSpot 是一个基于 [Astro](https://astro.build) 构建的动态心情气象站应用。它将真实天气与个人心情记录相结合，通过精美的可视化日记系统，帮助你追踪和回顾每一天的情绪变化。
 
-## 🚀 Project Structure
+## ✨ 特性
 
-Inside of your Astro project, you'll see the following folders and files:
+- **🌤️ 实时天气展示** - 动态获取并展示当前天气信息
+- **😊 心情记录器** - 使用五种心情类型记录你的情绪状态
+  - ☀️ 晴朗 (sunny)
+  - ☁️ 多云 (cloudy)
+  - 🌧️ 雨天 (rainy)
+  - ⛈️ 暴风雨 (stormy)
+  - 🌈 彩虹 (rainbow)
+- **📔 Markdown 日记** - 使用 Markdown 编写精美的日记内容
+- **📅 日历视图** - 带有心情标记的日历，直观查看记录历史
+- **🎨 动态主题** - 界面颜色随天气和心情动态变化
+- **📱 响应式设计** - 完美适配桌面端和移动端
+
+## �️ 技术栈
+
+- **[Astro](https://astro.build)** - 高性能的静态站点生成器
+- **[React](https://react.dev)** - 用于交互式组件（动态岛屿）
+- **[TypeScript](https://typescriptlang.org)** - 类型安全
+- **SSR + 预渲染** - 混合渲染策略
+- **Content Collections** - Astro 内容管理 API
+
+## 📁 项目结构
 
 ```text
 /
 ├── public/
 │   └── favicon.svg
-├── src
-│   ├── assets
-│   │   └── astro.svg
-│   ├── components
-│   │   └── Welcome.astro
-│   ├── layouts
-│   │   └── Layout.astro
-│   └── pages
-│       └── index.astro
+├── src/
+│   ├── assets/              # 静态资源
+│   ├── components/          # 组件
+│   │   ├── Calendar.astro       # 日历组件
+│   │   ├── DiaryCard.astro      # 日记卡片
+│   │   ├── MoodRecorder.tsx     # 心情记录器 (React)
+│   │   └── WeatherStation.astro # 天气站
+│   ├── diary/               # Markdown 日记内容
+│   ├── layouts/             # 布局模板
+│   ├── lib/                 # 工具函数
+│   ├── pages/               # 页面路由
+│   │   ├── index.astro          # 首页
+│   │   └── diary/               # 日记页面
+│   └── styles/              # 全局样式
+├── astro.config.mjs         # Astro 配置
+├── content.config.ts        # 内容集合配置
 └── package.json
 ```
 
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
+## 🚀 快速开始
 
-## 🧞 Commands
+### 安装依赖
 
-All commands are run from the root of the project, from a terminal:
+```bash
+pnpm install
+```
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `pnpm install`             | Installs dependencies                            |
-| `pnpm dev`             | Starts local dev server at `localhost:4321`      |
-| `pnpm build`           | Build your production site to `./dist/`          |
-| `pnpm preview`         | Preview your build locally, before deploying     |
-| `pnpm astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `pnpm astro -- --help` | Get help using the Astro CLI                     |
+### 启动开发服务器
 
-## 👀 Want to learn more?
+```bash
+pnpm dev
+```
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+开发服务器将在 `http://localhost:4321` 启动
+
+### 构建生产版本
+
+```bash
+pnpm build
+```
+
+### 预览生产构建
+
+```bash
+pnpm preview
+```
+
+## 📝 编写日记
+
+在 `src/diary/` 目录下创建 Markdown 文件来添加新日记。文件名格式建议为 `YYYY-MM-DD-标题.md`。
+
+### 日记模板
+
+```markdown
+---
+title: "今天是个好天气"
+date: 2026-01-17
+mood: sunny
+tags:
+  - 生活
+  - 随笔
+excerpt: "阳光明媚的一天..."
+---
+
+正文内容使用 Markdown 格式编写...
+```
+
+### 心情类型
+
+| 心情 | 值 | 图标 |
+|:-----|:---|:-----|
+| 晴朗 | `sunny` | ☀️ |
+| 多云 | `cloudy` | ☁️ |
+| 雨天 | `rainy` | 🌧️ |
+| 暴风雨 | `stormy` | ⛈️ |
+| 彩虹 | `rainbow` | 🌈 |
+
+## 🧞 命令列表
+
+| 命令 | 说明 |
+|:-----|:-----|
+| `pnpm install` | 安装依赖 |
+| `pnpm dev` | 启动开发服务器 (`localhost:4321`) |
+| `pnpm build` | 构建生产版本到 `./dist/` |
+| `pnpm preview` | 本地预览生产构建 |
+| `pnpm astro ...` | 运行 Astro CLI 命令 |
+| `pnpm astro -- --help` | 获取 Astro CLI 帮助 |
+
+## � 了解更多
+
+- [Astro 官方文档](https://docs.astro.build)
+- [Astro Discord 社区](https://astro.build/chat)
+
+## 📄 许可证
+
+MIT License

@@ -1,0 +1,237 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection, render } from 'astro:content';
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+  const diaries = await getCollection('diary');
+  return diaries.map(diary => ({
+    params: { slug: diary.id },
+    props: { diary },
+  }));
+}
+
+const { diary } = Astro.props;
+const { Content } = await render(diary);
+
+const moodIcons: Record<string, string> = {
+  sunny: '☀️',
+  cloudy: '⛅',
+  rainy: '🌧️',
+  stormy: '⛈️',
+  rainbow: '🌈',
+};
+
+const moodLabels: Record<string, string> = {
+  sunny: '阳光灿烂',
+  cloudy: '略有阴霾',
+  rainy: '心有小雨',
+  stormy: '暴风骤雨',
+  rainbow: '雨后彩虹',
+};
+
+const formattedDate = diary.data.date.toLocaleDateString('zh-CN', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+  weekday: 'long',
+});
+---
+
+<Layout title={`${diary.data.title} - SunSpot`} description={diary.data.excerpt}>
+  <article class="diary-article container">
+    <header class="article-header">
+      <a href="/diary" class="back-link">← 返回日记列表</a>
+      
+      <div class="article-meta">
+        <span class="mood-badge">
+          <span class="mood-icon">{moodIcons[diary.data.mood]}</span>
+          <span class="mood-label">{moodLabels[diary.data.mood]}</span>
+        </span>
+        <time class="article-date">{formattedDate}</time>
+      </div>
+      
+      <h1 class="article-title">{diary.data.title}</h1>
+      
+      {diary.data.tags && (
+        <div class="article-tags">
+          {diary.data.tags.map((tag: string) => (
+            <span class="tag">#{tag}</span>
+          ))}
+        </div>
+      )}
+    </header>
+    
+    <div class="article-content">
+      <Content />
+    </div>
+    
+    <footer class="article-footer">
+      <div class="sunflower-divider">🌻</div>
+    </footer>
+  </article>
+</Layout>
+
+<style>
+  .diary-article {
+    max-width: 800px;
+  }
+  
+  .back-link {
+    display: inline-block;
+    color: var(--text-muted);
+    text-decoration: none;
+    margin-bottom: var(--spacing-lg);
+    transition: color var(--transition-fast);
+  }
+  
+  .back-link:hover {
+    color: var(--primary);
+  }
+  
+  .article-header {
+    margin-bottom: var(--spacing-xl);
+  }
+  
+  .article-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+    flex-wrap: wrap;
+  }
+  
+  .mood-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    background: rgba(255, 159, 67, 0.15);
+    border-radius: var(--radius-full);
+  }
+  
+  .mood-icon {
+    font-size: 1.25rem;
+  }
+  
+  .mood-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--primary);
+  }
+  
+  .article-date {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+  }
+  
+  .article-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: var(--spacing-md);
+  }
+  
+  .article-tags {
+    display: flex;
+    gap: var(--spacing-xs);
+    flex-wrap: wrap;
+  }
+  
+  .tag {
+    padding: 4px 12px;
+    background: var(--surface);
+    border-radius: var(--radius-full);
+    font-size: 0.875rem;
+    color: var(--text-muted);
+  }
+  
+  .article-content {
+    background: var(--surface);
+    backdrop-filter: blur(20px);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    padding: var(--spacing-xl);
+    box-shadow: var(--shadow);
+  }
+  
+  .article-content :global(h1),
+  .article-content :global(h2),
+  .article-content :global(h3) {
+    margin-top: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
+    font-weight: 600;
+    color: var(--text);
+  }
+  
+  .article-content :global(h1) { font-size: 1.75rem; }
+  .article-content :global(h2) { font-size: 1.5rem; color: var(--primary); }
+  .article-content :global(h3) { font-size: 1.25rem; }
+  
+  .article-content :global(p) {
+    margin-bottom: var(--spacing-md);
+    line-height: 1.8;
+  }
+  
+  .article-content :global(ul),
+  .article-content :global(ol) {
+    margin-bottom: var(--spacing-md);
+    padding-left: var(--spacing-lg);
+  }
+  
+  .article-content :global(li) {
+    margin-bottom: var(--spacing-xs);
+    line-height: 1.6;
+  }
+  
+  .article-content :global(blockquote) {
+    margin: var(--spacing-lg) 0;
+    padding: var(--spacing-md) var(--spacing-lg);
+    background: rgba(255, 159, 67, 0.1);
+    border-left: 4px solid var(--primary);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    font-style: italic;
+  }
+  
+  .article-content :global(hr) {
+    margin: var(--spacing-lg) 0;
+    border: none;
+    border-top: 1px solid var(--border);
+  }
+  
+  .article-content :global(code) {
+    background: rgba(0, 0, 0, 0.05);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Fira Code', monospace;
+    font-size: 0.9em;
+  }
+  
+  .article-content :global(img) {
+    max-width: 100%;
+    border-radius: var(--radius-md);
+    margin: var(--spacing-md) 0;
+  }
+  
+  .article-footer {
+    text-align: center;
+    margin-top: var(--spacing-xl);
+    padding-top: var(--spacing-lg);
+  }
+  
+  .sunflower-divider {
+    font-size: 2rem;
+    opacity: 0.5;
+  }
+  
+  @media (max-width: 768px) {
+    .article-title {
+      font-size: 1.75rem;
+    }
+    
+    .article-content {
+      padding: var(--spacing-md);
+    }
+  }
+</style>
