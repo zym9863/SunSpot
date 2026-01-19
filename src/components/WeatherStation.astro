@@ -18,8 +18,126 @@ const theme = getThemeFromWeather(weather.type);
 </div>
 
 <script define:vars={{ theme }}>
-  // 将主题应用到文档根元素
-  document.documentElement.setAttribute('data-theme', theme);
+  const root = document.documentElement;
+  root.setAttribute('data-theme', theme);
+
+  const station = document.querySelector('.weather-station');
+  const iconEl = station?.querySelector('.weather-icon');
+  const tempEl = station?.querySelector('.temperature');
+  const descEl = station?.querySelector('.description');
+  const initialDescription = descEl?.textContent ?? '';
+  const initialTheme = theme;
+
+  const weatherCodeMap = {
+    0: 'sunny',
+    1: 'sunny',
+    2: 'cloudy',
+    3: 'cloudy',
+    45: 'cloudy',
+    48: 'cloudy',
+    51: 'rainy',
+    53: 'rainy',
+    55: 'rainy',
+    61: 'rainy',
+    63: 'rainy',
+    65: 'rainy',
+    66: 'rainy',
+    67: 'rainy',
+    71: 'cloudy',
+    73: 'cloudy',
+    75: 'cloudy',
+    80: 'rainy',
+    81: 'rainy',
+    82: 'stormy',
+    85: 'cloudy',
+    86: 'cloudy',
+    95: 'stormy',
+    96: 'stormy',
+    99: 'stormy',
+  };
+
+  const weatherDescriptions = {
+    sunny: '阳光明媚',
+    cloudy: '多云转晴',
+    rainy: '细雨绵绵',
+    stormy: '风雨交加',
+  };
+
+  const weatherIcons = {
+    sunny: '☀️',
+    cloudy: '⛅',
+    rainy: '🌧️',
+    stormy: '⛈️',
+  };
+
+  const getThemeFromWeather = (type) =>
+    type === 'sunny' ? 'sunny' : type === 'stormy' || type === 'rainy' ? 'rainy' : 'cloudy';
+
+  const applyTheme = (nextTheme) => {
+    root.setAttribute('data-theme', nextTheme);
+    station?.setAttribute('data-theme', nextTheme);
+  };
+
+  const renderWeather = (weather) => {
+    if (iconEl) iconEl.textContent = weather.icon;
+    if (tempEl) tempEl.textContent = `${weather.temperature}°C`;
+    if (descEl) descEl.textContent = weather.description;
+    applyTheme(getThemeFromWeather(weather.type));
+  };
+
+  const fetchWeather = async (latitude, longitude) => {
+    const response = await fetch(
+      `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,weather_code&timezone=auto`
+    );
+
+    if (!response.ok) {
+      throw new Error('天气API请求失败');
+    }
+
+    const data = await response.json();
+    const weatherCode = data.current?.weather_code ?? 0;
+    const temperature = data.current?.temperature_2m ?? 20;
+    const type = weatherCodeMap[weatherCode] ?? 'sunny';
+
+    return {
+      type,
+      temperature: Math.round(temperature),
+      description: weatherDescriptions[type],
+      icon: weatherIcons[type],
+    };
+  };
+
+  const updateWeatherFromGeolocation = () => {
+    if (!navigator.geolocation || !station) return;
+
+    if (descEl) descEl.textContent = '正在定位...';
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        try {
+          const weather = await fetchWeather(
+            position.coords.latitude,
+            position.coords.longitude
+          );
+          renderWeather(weather);
+        } catch {
+          if (descEl) descEl.textContent = initialDescription;
+          applyTheme(initialTheme);
+        }
+      },
+      () => {
+        if (descEl) descEl.textContent = initialDescription;
+        applyTheme(initialTheme);
+      },
+      {
+        enableHighAccuracy: false,
+        timeout: 8000,
+        maximumAge: 10 * 60 * 1000,
+      }
+    );
+  };
+
+  updateWeatherFromGeolocation();
 </script>
 
 <style>
