@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 type MoodType = 'sunny' | 'cloudy' | 'rainy' | 'stormy' | 'rainbow';
 
@@ -6,6 +6,13 @@ interface MoodOption {
     type: MoodType;
     icon: string;
     label: string;
+}
+
+interface MoodRecord {
+  date: string;
+  mood: MoodType;
+  note: string;
+  timestamp: number;
 }
 
 const moodOptions: MoodOption[] = [
@@ -16,10 +23,37 @@ const moodOptions: MoodOption[] = [
     { type: 'rainbow', icon: '🌈', label: '雨后彩虹' },
 ];
 
+const moodOptionMap = moodOptions.reduce((acc, option) => {
+  acc[option.type] = option;
+  return acc;
+}, {} as Record<MoodType, MoodOption>);
+
 export default function MoodRecorder() {
     const [selectedMood, setSelectedMood] = useState<MoodType | null>(null);
     const [note, setNote] = useState('');
     const [isSubmitted, setIsSubmitted] = useState(false);
+  const [savedRecord, setSavedRecord] = useState<MoodRecord | null>(null);
+
+  useEffect(() => {
+    const today = new Date().toISOString().split('T')[0];
+    const existingData = localStorage.getItem('sunspot-moods');
+    if (!existingData) return;
+
+    try {
+      const moods = JSON.parse(existingData) as MoodRecord[];
+      const todayRecord = moods
+        .filter((record) => record.date === today)
+        .sort((a, b) => b.timestamp - a.timestamp)[0];
+
+      if (todayRecord) {
+        setSavedRecord(todayRecord);
+        setSelectedMood(todayRecord.mood);
+        setNote(todayRecord.note || '');
+      }
+    } catch {
+      // 忽略解析错误
+    }
+  }, []);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -27,7 +61,7 @@ export default function MoodRecorder() {
 
         // 保存到本地存储
         const today = new Date().toISOString().split('T')[0];
-        const moodData = {
+        const moodData: MoodRecord = {
             date: today,
             mood: selectedMood,
             note,
@@ -35,9 +69,12 @@ export default function MoodRecorder() {
         };
 
         const existingData = localStorage.getItem('sunspot-moods');
-        const moods = existingData ? JSON.parse(existingData) : [];
-        moods.push(moodData);
-        localStorage.setItem('sunspot-moods', JSON.stringify(moods));
+        const moods = existingData ? (JSON.parse(existingData) as MoodRecord[]) : [];
+        const nextMoods = moods.filter((record) => record.date !== today);
+        nextMoods.push(moodData);
+        localStorage.setItem('sunspot-moods', JSON.stringify(nextMoods));
+
+        setSavedRecord(moodData);
 
         setIsSubmitted(true);
         setTimeout(() => {
@@ -83,6 +120,21 @@ export default function MoodRecorder() {
                     {isSubmitted ? '✓ 已记录' : '记录心情'}
                 </button>
             </form>
+
+              {savedRecord && (
+                <div className="mood-summary">
+                  <div className="summary-header">
+                    <span className="summary-icon">{moodOptionMap[savedRecord.mood].icon}</span>
+                    <div className="summary-text">
+                      <div className="summary-label">{moodOptionMap[savedRecord.mood].label}</div>
+                      <div className="summary-date">今天已记录</div>
+                    </div>
+                  </div>
+                  {savedRecord.note && (
+                    <p className="summary-note">“{savedRecord.note}”</p>
+                  )}
+                </div>
+              )}
 
             <style>{`
         .mood-recorder {
@@ -182,6 +234,41 @@ export default function MoodRecorder() {
         .submit-btn:disabled {
           opacity: 0.6;
           cursor: not-allowed;
+        }
+
+        .mood-summary {
+          margin-top: var(--spacing-md);
+          padding: var(--spacing-md);
+          border-radius: var(--radius-md);
+          background: rgba(255, 255, 255, 0.6);
+          border: 1px dashed var(--border);
+        }
+
+        .summary-header {
+          display: flex;
+          align-items: center;
+          gap: var(--spacing-sm);
+        }
+
+        .summary-icon {
+          font-size: 1.8rem;
+        }
+
+        .summary-label {
+          font-weight: 600;
+          color: var(--text);
+        }
+
+        .summary-date {
+          font-size: 0.85rem;
+          color: var(--text-muted);
+        }
+
+        .summary-note {
+          margin-top: var(--spacing-sm);
+          font-size: 0.95rem;
+          color: var(--text);
+          line-height: 1.5;
         }
       `}</style>
         </div>
