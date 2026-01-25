@@ -86,7 +86,8 @@ export default function MoodRecorder() {
 
     return (
         <div className="mood-recorder">
-            <h3 className="mood-title">今天的心理天气</h3>
+          <h3 className="mood-title">今天的心理天气</h3>
+          <p className="mood-subtitle">选择一种天气，写下心里的一句。</p>
 
             <form onSubmit={handleSubmit}>
                 <div className="mood-options">
@@ -140,60 +141,80 @@ export default function MoodRecorder() {
         .mood-recorder {
           padding: var(--spacing-lg);
           background: var(--surface);
-          backdrop-filter: blur(20px);
+          backdrop-filter: blur(22px);
           border-radius: var(--radius-lg);
           border: 1px solid var(--border);
           box-shadow: var(--shadow);
+          position: relative;
+          overflow: hidden;
         }
-        
+
+        .mood-recorder::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: radial-gradient(280px circle at 90% 0%, color-mix(in srgb, var(--primary) 30%, transparent), transparent 60%);
+          opacity: 0.7;
+          pointer-events: none;
+        }
+
         .mood-title {
-          font-size: 1.25rem;
-          font-weight: 600;
-          margin-bottom: var(--spacing-md);
-          color: var(--text);
+          font-size: 1.35rem;
+          font-weight: 700;
+          color: var(--ink);
+          font-family: var(--font-display);
         }
-        
+
+        .mood-subtitle {
+          font-size: 0.92rem;
+          color: var(--text-muted);
+          margin-bottom: var(--spacing-md);
+        }
+
         .mood-options {
-          display: flex;
-          flex-wrap: wrap;
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
           gap: var(--spacing-sm);
           margin-bottom: var(--spacing-md);
+          position: relative;
+          z-index: 1;
         }
-        
+
         .mood-btn {
           display: flex;
           flex-direction: column;
           align-items: center;
-          gap: 4px;
+          gap: 6px;
           padding: var(--spacing-sm);
-          background: rgba(255, 255, 255, 0.5);
-          border: 2px solid transparent;
+          background: var(--surface-strong);
+          border: 1px solid var(--border);
           border-radius: var(--radius-md);
           cursor: pointer;
           transition: all 0.2s ease;
-          min-width: 80px;
+          min-width: 100px;
         }
-        
+
         .mood-btn:hover {
-          background: rgba(255, 255, 255, 0.8);
+          background: var(--surface);
           transform: translateY(-2px);
+          border-color: var(--border-strong);
         }
-        
+
         .mood-btn.selected {
           border-color: var(--primary);
-          background: rgba(255, 255, 255, 0.9);
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+          background: linear-gradient(135deg, color-mix(in srgb, var(--primary) 40%, transparent), rgba(255, 255, 255, 0.85));
+          box-shadow: 0 12px 26px rgba(61, 40, 20, 0.18);
         }
-        
+
         .mood-icon {
-          font-size: 2rem;
+          font-size: 2.2rem;
         }
-        
+
         .mood-label {
-          font-size: 0.75rem;
+          font-size: 0.78rem;
           color: var(--text-muted);
         }
-        
+
         .mood-note {
           width: 100%;
           padding: var(--spacing-sm);
@@ -202,35 +223,37 @@ export default function MoodRecorder() {
           font-family: inherit;
           font-size: 1rem;
           resize: vertical;
-          background: rgba(255, 255, 255, 0.5);
+          background: rgba(255, 255, 255, 0.6);
           transition: all 0.2s ease;
         }
-        
+
         .mood-note:focus {
           outline: none;
           border-color: var(--primary);
-          background: rgba(255, 255, 255, 0.8);
+          background: rgba(255, 255, 255, 0.9);
+          box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 30%, transparent);
         }
-        
+
         .submit-btn {
           width: 100%;
           margin-top: var(--spacing-md);
-          padding: var(--spacing-sm) var(--spacing-md);
+          padding: 0.85rem var(--spacing-md);
           font-size: 1rem;
-          font-weight: 600;
-          color: white;
-          background: var(--primary);
+          font-weight: 700;
+          color: var(--ink);
+          background: linear-gradient(135deg, var(--primary), var(--primary-strong));
           border: none;
           border-radius: var(--radius-full);
           cursor: pointer;
           transition: all 0.2s ease;
+          box-shadow: 0 12px 24px rgba(61, 40, 20, 0.18);
         }
-        
+
         .submit-btn:hover:not(:disabled) {
-          background: var(--secondary);
           transform: translateY(-2px);
+          box-shadow: 0 18px 32px rgba(61, 40, 20, 0.24);
         }
-        
+
         .submit-btn:disabled {
           opacity: 0.6;
           cursor: not-allowed;
@@ -240,8 +263,8 @@ export default function MoodRecorder() {
           margin-top: var(--spacing-md);
           padding: var(--spacing-md);
           border-radius: var(--radius-md);
-          background: rgba(255, 255, 255, 0.6);
-          border: 1px dashed var(--border);
+          background: rgba(255, 255, 255, 0.68);
+          border: 1px dashed var(--border-strong);
         }
 
         .summary-header {
@@ -255,8 +278,8 @@ export default function MoodRecorder() {
         }
 
         .summary-label {
-          font-weight: 600;
-          color: var(--text);
+          font-weight: 700;
+          color: var(--ink);
         }
 
         .summary-date {
@@ -268,7 +291,7 @@ export default function MoodRecorder() {
           margin-top: var(--spacing-sm);
           font-size: 0.95rem;
           color: var(--text);
-          line-height: 1.5;
+          line-height: 1.6;
         }
       `}</style>
         </div>

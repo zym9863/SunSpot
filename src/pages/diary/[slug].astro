@@ -106,9 +106,10 @@ const formattedDate = diary.data.date.toLocaleDateString('zh-CN', {
     display: inline-flex;
     align-items: center;
     gap: var(--spacing-xs);
-    padding: var(--spacing-xs) var(--spacing-sm);
-    background: rgba(255, 159, 67, 0.15);
+    padding: 0.35rem 0.9rem;
+    background: linear-gradient(135deg, color-mix(in srgb, var(--primary) 40%, transparent), rgba(255, 255, 255, 0.8));
     border-radius: var(--radius-full);
+    border: 1px solid color-mix(in srgb, var(--primary) 45%, transparent);
   }
   
   .mood-icon {
@@ -118,7 +119,7 @@ const formattedDate = diary.data.date.toLocaleDateString('zh-CN', {
   .mood-label {
     font-size: 0.875rem;
     font-weight: 500;
-    color: var(--primary);
+    color: var(--primary-strong);
   }
   
   .article-date {
@@ -127,10 +128,12 @@ const formattedDate = diary.data.date.toLocaleDateString('zh-CN', {
   }
   
   .article-title {
-    font-size: 2.5rem;
+    font-size: clamp(2rem, 4vw, 3rem);
     font-weight: 700;
     line-height: 1.2;
     margin-bottom: var(--spacing-md);
+    color: var(--ink);
+    font-family: var(--font-display);
   }
   
   .article-tags {
@@ -141,15 +144,16 @@ const formattedDate = diary.data.date.toLocaleDateString('zh-CN', {
   
   .tag {
     padding: 4px 12px;
-    background: var(--surface);
+    background: rgba(255, 255, 255, 0.6);
     border-radius: var(--radius-full);
     font-size: 0.875rem;
     color: var(--text-muted);
+    border: 1px solid var(--border);
   }
   
   .article-content {
     background: var(--surface);
-    backdrop-filter: blur(20px);
+    backdrop-filter: blur(22px);
     border-radius: var(--radius-lg);
     border: 1px solid var(--border);
     padding: var(--spacing-xl);
@@ -166,7 +170,7 @@ const formattedDate = diary.data.date.toLocaleDateString('zh-CN', {
   }
   
   .article-content :global(h1) { font-size: 1.75rem; }
-  .article-content :global(h2) { font-size: 1.5rem; color: var(--primary); }
+  .article-content :global(h2) { font-size: 1.5rem; color: var(--primary-strong); }
   .article-content :global(h3) { font-size: 1.25rem; }
   
   .article-content :global(p) {
@@ -188,8 +192,8 @@ const formattedDate = diary.data.date.toLocaleDateString('zh-CN', {
   .article-content :global(blockquote) {
     margin: var(--spacing-lg) 0;
     padding: var(--spacing-md) var(--spacing-lg);
-    background: rgba(255, 159, 67, 0.1);
-    border-left: 4px solid var(--primary);
+    background: color-mix(in srgb, var(--primary) 18%, transparent);
+    border-left: 4px solid var(--primary-strong);
     border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
     font-style: italic;
   }
@@ -201,10 +205,11 @@ const formattedDate = diary.data.date.toLocaleDateString('zh-CN', {
   }
   
   .article-content :global(code) {
-    background: rgba(0, 0, 0, 0.05);
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid var(--border);
     padding: 2px 6px;
     border-radius: 4px;
-    font-family: 'Fira Code', monospace;
+    font-family: var(--font-mono);
     font-size: 0.9em;
   }
   

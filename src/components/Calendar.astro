@@ -60,45 +60,64 @@ const weekDays = ['日', '一', '二', '三', '四', '五', '六'];
 <style>
   .calendar {
     background: var(--surface);
-    backdrop-filter: blur(20px);
+    backdrop-filter: blur(22px);
     border-radius: var(--radius-lg);
     border: 1px solid var(--border);
     padding: var(--spacing-lg);
     box-shadow: var(--shadow);
+    position: relative;
+    overflow: hidden;
   }
-  
+
+  .calendar::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(280px circle at 20% 0%, color-mix(in srgb, var(--primary) 30%, transparent), transparent 65%);
+    opacity: 0.6;
+    pointer-events: none;
+  }
+
   .calendar-header {
     text-align: center;
     margin-bottom: var(--spacing-md);
+    position: relative;
+    z-index: 1;
   }
-  
+
   .calendar-title {
     font-size: 1.25rem;
-    font-weight: 600;
+    font-weight: 700;
     color: var(--primary);
+    font-family: var(--font-display);
   }
-  
+
   .calendar-weekdays {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 4px;
+    gap: 6px;
     margin-bottom: var(--spacing-sm);
+    position: relative;
+    z-index: 1;
   }
-  
+
   .weekday {
     text-align: center;
     font-size: 0.75rem;
     font-weight: 600;
     color: var(--text-muted);
     padding: var(--spacing-xs);
+    letter-spacing: 0.12em;
   }
-  
+
   .calendar-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 4px;
+    gap: 6px;
+    position: relative;
+    z-index: 1;
   }
-  
+
   .calendar-day {
     aspect-ratio: 1;
     display: flex;
@@ -108,34 +127,36 @@ const weekDays = ['日', '一', '二', '三', '四', '五', '六'];
     border-radius: var(--radius-sm);
     position: relative;
     transition: all var(--transition-fast);
+    border: 1px dashed transparent;
   }
-  
+
   .calendar-day:not(.empty):hover {
-    background: rgba(255, 159, 67, 0.1);
+    background: color-mix(in srgb, var(--primary) 18%, transparent);
+    border-color: color-mix(in srgb, var(--primary) 35%, transparent);
   }
-  
+
   .calendar-day.has-diary {
-    background: rgba(255, 159, 67, 0.15);
+    background: linear-gradient(135deg, color-mix(in srgb, var(--primary) 35%, transparent), rgba(255, 255, 255, 0.9));
     cursor: pointer;
+    border-color: color-mix(in srgb, var(--primary) 40%, transparent);
   }
-  
+
   .calendar-day.has-diary:hover {
-    background: rgba(255, 159, 67, 0.25);
-    transform: scale(1.05);
+    transform: scale(1.04);
   }
-  
+
   .day-number {
-    font-size: 0.875rem;
-    font-weight: 500;
+    font-size: 0.9rem;
+    font-weight: 600;
   }
-  
+
   .sun-icon {
     font-size: 0.75rem;
     position: absolute;
-    bottom: 2px;
-    animation: pulse 2s ease-in-out infinite;
+    bottom: 3px;
+    animation: pulse 2.2s ease-in-out infinite;
   }
-  
+
   @keyframes pulse {
     0%, 100% { opacity: 1; transform: scale(1); }
     50% { opacity: 0.8; transform: scale(0.95); }
